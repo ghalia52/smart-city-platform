@@ -6,38 +6,153 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - PATCH
-              - OPTIONS
+            allowedOrigins: 
+              - "http://localhost:3000"
+              - "http://client-web:3000"
+            allowedMethods: "*"
             allowedHeaders: "*"
-      
+            allowCredentials: true
+            exposedHeaders: "*"
       routes:
-        # GraphQL Service
-        - id: graphql-service
-          uri: http://localhost:8084
+        # ============ MOBILITY REST SERVICE ============
+        - id: mobility-service
+          uri: http://mobility-rest:8081
           predicates:
-            - Path=/graphql/**, /graphiql/**
-        
-        # Integrator Service
+            - Path=/api/mobility/**
+          filters:
+            - RewritePath=/api/mobility/(?<segment>.*), /${segment}
+
+        - id: mobility-actuator
+          uri: http://mobility-rest:8081
+          predicates:
+            - Path=/api/mobility/actuator/**
+          filters:
+            - RewritePath=/api/mobility/actuator/(?<segment>.*), /actuator/${segment}
+
+        # ============ AIR QUALITY SOAP SERVICE ============
+        - id: air-quality-service
+          uri: http://air-soap:8082
+          predicates:
+            - Path=/api/air-quality/**
+          filters:
+            - RewritePath=/api/air-quality/(?<segment>.*), /${segment}
+
+        - id: air-quality-actuator
+          uri: http://air-soap:8082
+          predicates:
+            - Path=/api/air-quality/actuator/**
+          filters:
+            - RewritePath=/api/air-quality/actuator/(?<segment>.*), /actuator/${segment}
+
+        # ============ EMERGENCY GRPC SERVICE ============
+        # Route for /api/emergency (root endpoint)
+        - id: emergency-service-root
+          uri: http://emergency-grpc:8083
+          predicates:
+            - Path=/api/emergency
+            - Method=GET,POST,PUT,DELETE,OPTIONS
+          filters:
+            - SetPath=/api/emergencies
+
+        # Route for /api/emergency/* (single segment)
+        - id: emergency-service-path
+          uri: http://emergency-grpc:8083
+          predicates:
+            - Path=/api/emergency/{segment}
+          filters:
+            - SetPath=/api/emergencies/{segment}
+
+        # Route for /api/emergency/** (deep paths)
+        - id: emergency-service-deep
+          uri: http://emergency-grpc:8083
+          predicates:
+            - Path=/api/emergency/**
+          filters:
+            - RewritePath=/api/emergency/(?<segment>.*), /api/emergencies/${segment}
+
+        # Emergency Actuator
+        - id: emergency-actuator
+          uri: http://emergency-grpc:8083
+          predicates:
+            - Path=/api/emergency/actuator/**
+          filters:
+            - RewritePath=/api/emergency/actuator/(?<segment>.*), /actuator/${segment}
+
+        # ============ GRAPHQL QUERY SERVICE ============
+        # GraphQL endpoint - POST only
+        - id: query-graphql-endpoint
+          uri: http://query-graphql:8084
+          predicates:
+            - Path=/api/graphql
+            - Method=POST,OPTIONS
+          filters:
+            - SetPath=/graphql
+
+        # GraphiQL interface - GET
+        - id: query-graphiql-ui
+          uri: http://query-graphql:8084
+          predicates:
+            - Path=/api/graphiql
+            - Method=GET
+          filters:
+            - SetPath=/graphiql
+
+        # GraphiQL resources (CSS, JS, etc.)
+        - id: query-graphiql-resources
+          uri: http://query-graphql:8084
+          predicates:
+            - Path=/api/graphiql/**
+          filters:
+            - RewritePath=/api/graphiql/(?<segment>.*), /graphiql/${segment}
+
+        # GraphQL Actuator
+        - id: graphql-actuator
+          uri: http://query-graphql:8084
+          predicates:
+            - Path=/api/graphql/actuator/**
+          filters:
+            - RewritePath=/api/graphql/actuator/(?<segment>.*), /actuator/${segment}
+
+        # ============ INTEGRATOR SERVICE ============
         - id: integrator-service
-          uri: http://localhost:8085
+          uri: http://integrator:8085
           predicates:
-            - Path=/api/**
-        
-        # Health check
-        - id: health-check
+            - Path=/api/integrator/**
+          filters:
+            - RewritePath=/api/integrator/(?<segment>.*), /${segment}
+
+        - id: integrator-actuator
+          uri: http://integrator:8085
+          predicates:
+            - Path=/api/integrator/actuator/**
+          filters:
+            - RewritePath=/api/integrator/actuator/(?<segment>.*), /actuator/${segment}
+
+        # ============ GATEWAY HEALTH CHECK ============
+        - id: gateway-health
           uri: http://localhost:8080
           predicates:
             - Path=/health
+          filters:
+            - SetPath=/actuator/health
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    gateway:
+      enabled: true
+    health:
+      show-details: always
 
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
+    reactor.netty: DEBUG
