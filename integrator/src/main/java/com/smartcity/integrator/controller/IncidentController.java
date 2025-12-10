@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/incidents")
-@CrossOrigin(origins = "*")
 public class IncidentController {
     
     @Autowired

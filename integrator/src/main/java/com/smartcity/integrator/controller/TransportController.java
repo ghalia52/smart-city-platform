@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/transport")
-@CrossOrigin(origins = "*")
 public class TransportController {
     
     @Autowired

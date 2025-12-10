@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/air-quality")
-@CrossOrigin(origins = "*")
 public class AirQualityController {
     
     @Autowired

@@ -1,11 +1,10 @@
 server:
   port: 8084
-
 spring:
   application:
     name: query-graphql
   datasource:
-    url: jdbc:postgresql://localhost:5432/smartcity
+    url: jdbc:postgresql://postgres:5432/smartcity  # Changed from localhost to postgres
     username: smart
     password: smartpass
     driver-class-name: org.postgresql.Driver
@@ -21,11 +20,6 @@ spring:
       enabled: true
       path: /graphiql
     path: /graphql
-    cors:
-      allowed-origins: "*"
-      allowed-methods: "*"
-      allowed-headers: "*"
-
 logging:
   level:
     org.springframework.graphql: DEBUG
