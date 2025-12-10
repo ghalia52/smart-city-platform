@@ -20,6 +20,8 @@ public class CorsConfig {
         corsConfig.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
                 "http://client-web:3000",
+                "http://smartcity-client",
+                "http://smartcity-client:80",
                 "http://localhost:8081",
                 "http://localhost:8082",
                 "http://localhost:8083",
