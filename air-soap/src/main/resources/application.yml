@@ -1,0 +1,14 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/smartcity
+    username: smart
+    password: smartpass
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none   # tables already created
+    show-sql: true

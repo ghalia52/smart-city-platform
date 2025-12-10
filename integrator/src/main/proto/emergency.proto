@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+option java_package = "com.smartcity.emergencygrpc.grpc";
+option java_multiple_files = true;
+
+service EmergencyService {
+    // Get all incidents
+    rpc GetAllIncidents (Empty) returns (IncidentList);
+    
+    // Report a new incident
+    rpc ReportIncident (IncidentRequest) returns (IncidentResponse);
+    
+    // Get incidents by type
+    rpc GetIncidentsByType (TypeRequest) returns (IncidentList);
+    
+    // Get incidents by status
+    rpc GetIncidentsByStatus (StatusRequest) returns (IncidentList);
+    
+    // Update incident status
+    rpc UpdateIncidentStatus (StatusUpdateRequest) returns (IncidentResponse);
+}
+
+message Empty {}
+
+message IncidentRequest {
+    string type = 1;        // accident, fire, ambulance
+    string description = 2;
+    double lat = 3;
+    double lon = 4;
+}
+
+message IncidentResponse {
+    string status = 1;
+    int64 incidentId = 2;
+    string message = 3;
+}
+
+message Incident {
+    int64 id = 1;
+    string type = 2;
+    string description = 3;
+    double lat = 4;
+    double lon = 5;
+    string status = 6;
+    string createdAt = 7;
+}
+
+message IncidentList {
+    repeated Incident incidents = 1;
+    int32 total = 2;
+}
+
+message TypeRequest {
+    string type = 1;  // accident, fire, ambulance
+}
+
+message StatusRequest {
+    string status = 1;  // new, in-progress, resolved
+}
+
+message StatusUpdateRequest {
+    int64 incidentId = 1;
+    string status = 2;  // new, in-progress, resolved
+}

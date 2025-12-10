@@ -1,0 +1,139 @@
+type Query {
+    # User queries
+    allUsers: [User!]!
+    user(id: ID!): User
+    userByUsername(username: String!): User
+    
+    # Transport queries
+    allTransportLines: [TransportLine!]!
+    transportLine(id: ID!): TransportLine
+    transportLinesByMode(mode: String!): [TransportLine!]!
+    
+    # Schedule queries
+    allSchedules: [Schedule!]!
+    schedule(id: ID!): Schedule
+    schedulesByLine(lineId: ID!): [Schedule!]!
+    schedulesByStop(stop: String!): [Schedule!]!
+    schedulesByDay(dayOfWeek: String!): [Schedule!]!
+    
+    # Air Quality queries
+    allAirQuality: [AirQuality!]!
+    airQuality(id: ID!): AirQuality
+    airQualityByZone(zone: String!): [AirQuality!]!
+    latestAirQuality(limit: Int = 10): [AirQuality!]!
+    poorAirQuality(threshold: Int = 100): [AirQuality!]!
+    
+    # Incident queries
+    allIncidents: [Incident!]!
+    incident(id: ID!): Incident
+    incidentsByType(type: String!): [Incident!]!
+    incidentsByStatus(status: String!): [Incident!]!
+    recentIncidents(limit: Int = 10): [Incident!]!
+}
+
+type Mutation {
+    # User mutations
+    createUser(input: UserInput!): User!
+    updateUser(id: ID!, input: UserInput!): User!
+    deleteUser(id: ID!): Boolean!
+    
+    # Transport mutations
+    createTransportLine(input: TransportLineInput!): TransportLine!
+    updateTransportLine(id: ID!, input: TransportLineInput!): TransportLine!
+    deleteTransportLine(id: ID!): Boolean!
+    
+    # Schedule mutations
+    createSchedule(input: ScheduleInput!): Schedule!
+    updateSchedule(id: ID!, input: ScheduleInput!): Schedule!
+    deleteSchedule(id: ID!): Boolean!
+    
+    # Air Quality mutations
+    reportAirQuality(input: AirQualityInput!): AirQuality!
+    
+    # Incident mutations
+    reportIncident(input: IncidentInput!): Incident!
+    updateIncidentStatus(id: ID!, status: String!): Incident!
+}
+
+# Types
+type User {
+    id: ID!
+    username: String!
+    email: String
+    createdAt: String!
+}
+
+type TransportLine {
+    id: ID!
+    name: String!
+    mode: String!
+    route: String
+    schedules: [Schedule!]
+}
+
+type Schedule {
+    id: ID!
+    lineId: ID!
+    stop: String
+    departureTime: String
+    arrivalTime: String
+    dayOfWeek: String
+    transportLine: TransportLine
+}
+
+type AirQuality {
+    id: ID!
+    zone: String!
+    aqi: Int
+    pm25: Float
+    no2: Float
+    co2: Float
+    o3: Float
+    measuredAt: String!
+}
+
+type Incident {
+    id: ID!
+    type: String
+    description: String
+    lat: Float
+    lon: Float
+    status: String!
+    createdAt: String!
+}
+
+# Input types
+input UserInput {
+    username: String!
+    email: String
+}
+
+input TransportLineInput {
+    name: String!
+    mode: String!
+    route: String
+}
+
+input ScheduleInput {
+    lineId: ID!
+    stop: String
+    departureTime: String!
+    arrivalTime: String!
+    dayOfWeek: String!
+}
+
+input AirQualityInput {
+    zone: String!
+    aqi: Int
+    pm25: Float
+    no2: Float
+    co2: Float
+    o3: Float
+}
+
+input IncidentInput {
+    type: String!
+    description: String
+    lat: Float!
+    lon: Float!
+}

@@ -1,0 +1,22 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: integrator
+
+# gRPC Client Configuration
+grpc:
+  client:
+    emergency-service:
+      address: static://localhost:9090
+      negotiationType: plaintext
+
+# GraphQL Service
+graphql:
+  service:
+    url: http://localhost:8084/graphql
+
+logging:
+  level:
+    com.smartcity: DEBUG

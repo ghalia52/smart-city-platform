@@ -1,0 +1,24 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://smartcity.com/air"
+           targetNamespace="http://smartcity.com/air"
+           elementFormDefault="qualified">
+
+    <xs:element name="GetAqiRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="zone" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetAqiResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="zone" type="xs:string"/>
+                <xs:element name="aqi" type="xs:int"/>
+                <xs:element name="status" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
