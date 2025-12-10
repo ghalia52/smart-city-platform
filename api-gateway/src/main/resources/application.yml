@@ -9,9 +9,10 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins:
+            allowedOrigins: 
               - "http://localhost:5173"
               - "http://localhost:3000"
+              - "http://client-web:3000"
             allowedMethods:
               - GET
               - POST
@@ -22,7 +23,7 @@ spring:
             allowedHeaders: "*"
             allowCredentials: true
             maxAge: 3600
-
+      
       routes:
         # ============ GRAPHQL SERVICE ============
         - id: query-graphql
@@ -31,14 +32,20 @@ spring:
             - Path=/api/graphql
           filters:
             - SetPath=/graphql
-
+        
         - id: query-graphiql
           uri: http://query-graphql:8084
           predicates:
             - Path=/api/graphiql
           filters:
             - SetPath=/graphiql
-
+        
+        # ============ CHAT SERVICE (Gemini AI) ============
+        - id: chat-service
+          uri: http://integrator:8085
+          predicates:
+            - Path=/api/chat
+        
         # ============ INCIDENTS (via Integrator) ============
         - id: integrator-incidents
           uri: http://integrator:8085
@@ -46,7 +53,7 @@ spring:
             - Path=/api/incidents,/api/incidents/**
           filters:
             - RewritePath=/api/(?<segment>.*), /api/${segment}
-
+        
         # ============ USERS (via Integrator) ============
         - id: integrator-users
           uri: http://integrator:8085
@@ -54,7 +61,7 @@ spring:
             - Path=/api/users,/api/users/**
           filters:
             - RewritePath=/api/(?<segment>.*), /api/${segment}
-
+        
         # ============ TRANSPORT (via Integrator) ============
         - id: integrator-transport
           uri: http://integrator:8085
@@ -62,7 +69,7 @@ spring:
             - Path=/api/transport,/api/transport/**
           filters:
             - RewritePath=/api/(?<segment>.*), /api/${segment}
-
+        
         # ============ MOBILITY REST SERVICE ============
         - id: mobility-service
           uri: http://mobility-rest:8081
@@ -70,7 +77,7 @@ spring:
             - Path=/api/mobility/**
           filters:
             - RewritePath=/api/mobility/(?<segment>.*), /${segment}
-
+        
         # ============ AIR QUALITY SOAP SERVICE ============
         - id: air-quality-service
           uri: http://air-soap:8082
@@ -78,7 +85,7 @@ spring:
             - Path=/api/air-quality/**
           filters:
             - RewritePath=/api/air-quality/(?<segment>.*), /${segment}
-
+        
         # ============ EMERGENCY GRPC SERVICE ============
         - id: emergency-service
           uri: http://emergency-grpc:8083
@@ -86,7 +93,7 @@ spring:
             - Path=/api/emergency,/api/emergency/**
           filters:
             - RewritePath=/api/emergency(?<segment>.*), /api/emergencies${segment}
-
+        
         # ============ GENERAL INTEGRATOR (FALLBACK) ============
         - id: integrator-service
           uri: http://integrator:8085

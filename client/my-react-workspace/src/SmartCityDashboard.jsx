@@ -126,30 +126,30 @@ const SmartCityDashboard = () => {
     setStats(prev => ({ ...prev, avgAqi }));
   };
 
-const fetchIncidents = async () => {
-  try {
-    const response = await fetch(`${API_BASE}/integrator/api/incidents`, {
-      method: 'GET',
-      credentials: 'include', // if you use cookies/auth, remove if not needed
-      headers: {
-        'Content-Type': 'application/json'
+ const fetchIncidents = async () => {
+    try {
+      console.log('Fetching incidents from:', `${API_BASE}/integrator/api/incidents`);
+      const response = await fetch(`${API_BASE}/integrator/api/incidents`);
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      
+      const data = await response.json();
+      console.log('Incidents data:', data);
+      
+      // Ensure data is an array
+      const incidentsArray = Array.isArray(data) ? data : [];
+      setIncidents(incidentsArray);
+      
+      const active = incidentsArray.filter(i => i.status === 'new' || i.status === 'in-progress').length;
+      setStats(prev => ({ ...prev, activeIncidents: active }));
+    } catch (error) {
+      console.error('Error fetching incidents:', error);
+      setIncidents([]);
     }
-
-    const data = await response.json();
-    setIncidents(data || []);
-
-    const active = data?.filter(i => i.status === 'new' || i.status === 'in-progress').length || 0;
-    setStats(prev => ({ ...prev, activeIncidents: active }));
-
-  } catch (err) {
-    console.error('Error fetching incidents:', err);
-  }
-};
+  };
 
 
   const getAqiLevel = (aqi) => {
