@@ -1,3 +1,5 @@
+# integrator/src/main/resources/application.yml
+
 server:
   port: 8085
 
@@ -5,18 +7,19 @@ spring:
   application:
     name: integrator
 
-# gRPC Client Configuration
+# gRPC Client Configuration - FIXED
 grpc:
   client:
     emergency-service:
-      address: static://localhost:9090
+      address: static://emergency-grpc:9090  # Changed from localhost to emergency-grpc
       negotiationType: plaintext
 
 # GraphQL Service
 graphql:
   service:
-    url: http://localhost:8084/graphql
+    url: http://query-graphql:8084/graphql  # Already correct
 
 logging:
   level:
     com.smartcity: DEBUG
+    io.grpc: DEBUG
